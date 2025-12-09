@@ -1,0 +1,7 @@
+{
+  "name": "Gemini React Chatbot",
+  "description": "A high-performance, responsive AI chatbot interface built with React, TypeScript, and Tailwind CSS, powered by the Google Gemini API.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
