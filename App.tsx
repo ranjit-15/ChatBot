@@ -144,9 +144,6 @@ const App: React.FC = () => {
     
     if (isListening) {
       toggleListening();
-      // Allow state update to settle before submitting? 
-      // Actually, usually we just stop listening and let the user review, but if they hit enter...
-      // Let's just stop listening if they force submit.
     }
 
     if (!inputValue.trim() || isLoading) return;
@@ -219,21 +216,28 @@ const App: React.FC = () => {
   const isApiKeyMissing = !process.env.API_KEY;
 
   return (
-    <div className="flex flex-col h-screen bg-slate-900 text-slate-100 font-sans">
+    <div className="flex flex-col h-screen bg-[#030712] text-gray-100 font-sans relative overflow-hidden">
       
+      {/* Ambient Background Effects */}
+      <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-indigo-500/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-purple-500/10 rounded-full blur-[120px] pointer-events-none" />
+
       {/* Header */}
-      <header className="flex-none h-16 border-b border-slate-800 bg-slate-900/80 backdrop-blur-md flex items-center justify-between px-4 md:px-8 sticky top-0 z-10">
-        <div className="flex items-center gap-2">
-          <div className="bg-gradient-to-tr from-indigo-500 to-purple-500 p-2 rounded-lg">
-            <Sparkles size={20} className="text-white" />
+      <header className="flex-none h-20 flex items-center justify-between px-6 z-20 bg-transparent">
+        <div className="flex items-center gap-3">
+          <div className="bg-gradient-to-tr from-indigo-500 to-violet-500 p-2.5 rounded-xl shadow-lg shadow-indigo-500/20">
+            <Sparkles size={22} className="text-white" />
           </div>
-          <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-purple-400">
-            ChatBot
-          </h1>
+          <div>
+            <h1 className="text-xl font-bold tracking-tight text-white">
+              ChatBot
+            </h1>
+            <p className="text-xs text-gray-400 font-medium tracking-wide uppercase">AI Assistant</p>
+          </div>
         </div>
         <button 
           onClick={handleClearChat}
-          className="p-2 text-slate-400 hover:text-red-400 hover:bg-slate-800 rounded-lg transition-colors"
+          className="p-2.5 text-gray-400 hover:text-red-400 hover:bg-white/5 rounded-xl transition-all duration-200"
           title="Clear Conversation"
         >
           <Trash2 size={20} />
@@ -242,13 +246,13 @@ const App: React.FC = () => {
 
       {/* Warning if no API Key */}
       {isApiKeyMissing && (
-        <div className="bg-amber-500/10 border-l-4 border-amber-500 p-4 m-4 rounded-r shadow-md">
-          <div className="flex items-start">
-            <AlertTriangle className="text-amber-500 mr-3 mt-1" size={20} />
+        <div className="mx-6 mt-4 z-20">
+          <div className="bg-amber-500/10 border border-amber-500/20 p-4 rounded-xl flex items-start gap-3">
+            <AlertTriangle className="text-amber-500 shrink-0" size={20} />
             <div>
-              <p className="font-bold text-amber-500">API Key Missing</p>
-              <p className="text-sm text-amber-200/80">
-                Please ensure <code>process.env.API_KEY</code> is set in your environment variables to use the Gemini API.
+              <p className="font-semibold text-amber-500">Configuration Required</p>
+              <p className="text-sm text-amber-200/70 mt-1">
+                API Key is missing. Please set <code>process.env.API_KEY</code> to continue.
               </p>
             </div>
           </div>
@@ -256,16 +260,27 @@ const App: React.FC = () => {
       )}
 
       {/* Chat Area */}
-      <main className="flex-1 overflow-y-auto px-4 py-6 md:px-20 scroll-smooth">
-        <div className="max-w-4xl mx-auto flex flex-col">
+      <main className="flex-1 overflow-y-auto px-4 py-6 md:px-6 scroll-smooth z-10 scrollbar-thin scrollbar-thumb-gray-800 scrollbar-track-transparent">
+        <div className="max-w-3xl mx-auto flex flex-col min-h-full justify-end pb-4">
+          {/* Empty State / Welcome */}
+          {messages.length === 1 && (
+            <div className="flex-1 flex flex-col items-center justify-center opacity-50 space-y-4 mb-20">
+              <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center">
+                <Sparkles size={32} className="text-indigo-400" />
+              </div>
+              <p className="text-gray-400">Start a conversation...</p>
+            </div>
+          )}
+
           {messages.map(msg => (
             <ChatMessage key={msg.id} message={msg} />
           ))}
+          
           {isLoading && messages[messages.length - 1]?.text === '' && (
-             <div className="flex w-full mb-6 justify-start">
-                <div className="flex max-w-[85%] flex-row gap-3">
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-emerald-600 flex items-center justify-center">
-                    <Sparkles size={16} className="text-white" />
+             <div className="flex w-full mb-8 justify-start animate-in fade-in duration-300">
+                <div className="flex max-w-[85%] flex-row items-end gap-3">
+                   <div className="flex-shrink-0 w-8 h-8 rounded-full bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center">
+                    <Sparkles size={14} className="text-indigo-400" />
                   </div>
                   <TypingIndicator />
                 </div>
@@ -276,72 +291,76 @@ const App: React.FC = () => {
       </main>
 
       {/* Input Area */}
-      <footer className="flex-none p-4 md:p-6 bg-slate-900 border-t border-slate-800">
-        <div className="max-w-4xl mx-auto relative">
-          <div className="mb-2 flex items-center justify-end">
-            <label className="flex items-center cursor-pointer space-x-2 text-xs md:text-sm text-slate-400 hover:text-indigo-400 transition-colors">
-              <span className={isThinkingMode ? "text-indigo-400 font-medium" : ""}>Thinking Mode</span>
-              <div 
-                onClick={() => setIsThinkingMode(!isThinkingMode)}
-                className={`relative w-10 h-5 rounded-full transition-colors duration-200 ease-in-out ${isThinkingMode ? 'bg-indigo-600' : 'bg-slate-700'}`}
-              >
-                <div 
-                  className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white transition-transform duration-200 ease-in-out transform ${isThinkingMode ? 'translate-x-5' : 'translate-x-0'}`} 
-                />
-              </div>
-              <BrainCircuit size={16} className={isThinkingMode ? "text-indigo-400" : "text-slate-500"} />
-            </label>
+      <footer className="flex-none p-4 md:p-6 pb-8 z-20 bg-gradient-to-t from-[#030712] via-[#030712] to-transparent">
+        <div className="max-w-3xl mx-auto">
+          {/* Controls Bar */}
+          <div className="flex justify-center mb-4">
+            <button 
+              onClick={() => setIsThinkingMode(!isThinkingMode)}
+              className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-medium transition-all duration-300 border ${
+                isThinkingMode 
+                  ? 'bg-indigo-500/20 border-indigo-500/30 text-indigo-300 shadow-[0_0_15px_rgba(99,102,241,0.2)]' 
+                  : 'bg-white/5 border-white/10 text-gray-400 hover:bg-white/10'
+              }`}
+            >
+              <BrainCircuit size={14} className={isThinkingMode ? "animate-pulse" : ""} />
+              <span>Thinking Mode</span>
+              <span className={`w-1.5 h-1.5 rounded-full ml-1 ${isThinkingMode ? 'bg-indigo-400' : 'bg-gray-600'}`} />
+            </button>
           </div>
 
-          <form onSubmit={handleSubmit} className="relative group">
-            <textarea
-              ref={inputRef}
-              rows={1}
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder={isListening ? "Listening..." : (isThinkingMode ? "Ask a complex question..." : "Ask me anything...")}
-              className={`w-full bg-slate-800 text-slate-100 border rounded-2xl pl-5 pr-28 py-4 focus:outline-none focus:ring-2 transition-all resize-none shadow-lg placeholder:text-slate-500 ${
-                isThinkingMode 
-                  ? "border-indigo-500/50 focus:ring-indigo-500 focus:border-indigo-500" 
-                  : "border-slate-700 focus:ring-indigo-500/50 focus:border-indigo-500"
-              } ${isListening ? "ring-2 ring-red-500/50 border-red-500" : ""}`}
-              style={{ minHeight: '60px', maxHeight: '200px' }}
-              disabled={isApiKeyMissing}
-            />
+          <div className="relative group">
+            <div className={`absolute -inset-0.5 rounded-[28px] opacity-30 blur transition duration-500 ${isThinkingMode ? 'bg-indigo-500' : 'bg-gradient-to-r from-gray-700 to-gray-600'}`}></div>
             
-            <div className="absolute right-3 bottom-3 flex gap-2">
-              <button
-                type="button"
-                onClick={toggleListening}
-                disabled={isApiKeyMissing || isLoading}
-                className={`p-2 rounded-xl transition-all shadow-md hover:scale-105 ${
-                  isListening 
-                    ? "bg-red-500 text-white animate-pulse" 
-                    : "bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-white"
-                }`}
-                title={isListening ? "Stop Recording" : "Start Voice Input"}
-              >
-                {isListening ? <StopCircle size={20} /> : <Mic size={20} />}
-              </button>
+            <form onSubmit={handleSubmit} className="relative flex items-end gap-2 bg-[#13141f] border border-white/10 rounded-[26px] p-2 shadow-2xl">
+              
+              <textarea
+                ref={inputRef}
+                rows={1}
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder={isListening ? "Listening..." : "Type your message..."}
+                className="w-full bg-transparent text-gray-100 border-none focus:ring-0 px-4 py-3 min-h-[52px] max-h-[150px] resize-none placeholder:text-gray-500"
+                disabled={isApiKeyMissing}
+              />
+              
+              <div className="flex items-center gap-1.5 pb-1.5 pr-1.5">
+                <button
+                  type="button"
+                  onClick={toggleListening}
+                  disabled={isApiKeyMissing || isLoading}
+                  className={`p-2.5 rounded-full transition-all duration-200 ${
+                    isListening 
+                      ? "bg-red-500/20 text-red-400 animate-pulse" 
+                      : "text-gray-400 hover:text-white hover:bg-white/10"
+                  }`}
+                  title={isListening ? "Stop Recording" : "Voice Input"}
+                >
+                  {isListening ? <StopCircle size={20} /> : <Mic size={20} />}
+                </button>
 
-              <button
-                type="submit"
-                disabled={!inputValue.trim() || isLoading || isApiKeyMissing}
-                className={`p-2 text-white rounded-xl disabled:opacity-50 transition-all shadow-md group-focus-within:scale-105 ${
-                  isThinkingMode ? "bg-indigo-600 hover:bg-indigo-500" : "bg-indigo-600 hover:bg-indigo-500"
-                }`}
-              >
-                <Send size={20} />
-              </button>
-            </div>
-          </form>
-          <div className="text-center mt-2">
-            <p className="text-xs text-slate-500">
-              {isThinkingMode 
-                ? "Powered by Gemini 3.0 Pro (Thinking Mode). Responses may take longer." 
-                : "Powered by Gemini 2.5 Flash. AI can make mistakes."}
-            </p>
+                <button
+                  type="submit"
+                  disabled={!inputValue.trim() || isLoading || isApiKeyMissing}
+                  className={`p-2.5 rounded-full transition-all duration-200 shadow-lg ${
+                    !inputValue.trim() || isLoading
+                      ? 'bg-gray-800 text-gray-500 cursor-not-allowed'
+                      : isThinkingMode 
+                        ? 'bg-indigo-600 text-white hover:bg-indigo-500 shadow-indigo-500/20' 
+                        : 'bg-white text-gray-900 hover:bg-gray-100'
+                  }`}
+                >
+                  <Send size={18} fill={!inputValue.trim() ? "none" : "currentColor"} className={inputValue.trim() ? "translate-x-0.5" : ""} />
+                </button>
+              </div>
+            </form>
+          </div>
+          
+          <div className="text-center mt-3">
+             <p className="text-[10px] text-gray-600 tracking-wide">
+              {isThinkingMode ? "GEMINI 3.0 PRO • THINKING ENABLED" : "GEMINI 2.5 FLASH • SPEED OPTIMIZED"}
+             </p>
           </div>
         </div>
       </footer>

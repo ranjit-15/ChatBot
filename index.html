@@ -10,20 +10,20 @@
       body {
         font-family: 'Inter', sans-serif;
       }
-      /* Custom scrollbar for Webkit */
+      /* Custom scrollbar */
       ::-webkit-scrollbar {
-        width: 8px;
-        height: 8px;
+        width: 6px;
+        height: 6px;
       }
       ::-webkit-scrollbar-track {
         background: transparent; 
       }
       ::-webkit-scrollbar-thumb {
-        background: #475569; 
-        border-radius: 4px;
+        background: rgba(255, 255, 255, 0.1); 
+        border-radius: 10px;
       }
       ::-webkit-scrollbar-thumb:hover {
-        background: #64748b; 
+        background: rgba(255, 255, 255, 0.2); 
       }
     </style>
   <script type="importmap">
@@ -33,12 +33,16 @@
     "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.1/",
     "react/": "https://aistudiocdn.com/react@^19.2.1/",
     "@google/genai": "https://aistudiocdn.com/@google/genai@^1.32.0",
-    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.556.0"
+    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.556.0",
+    "react-markdown": "https://esm.sh/react-markdown@9?bundle",
+    "react-syntax-highlighter": "https://esm.sh/react-syntax-highlighter@15?bundle",
+    "react-syntax-highlighter/dist/esm/styles/prism": "https://esm.sh/react-syntax-highlighter@15/dist/esm/styles/prism?bundle",
+    "react-syntax-highlighter/": "https://aistudiocdn.com/react-syntax-highlighter@^16.1.0/"
   }
 }
 </script>
 </head>
-  <body class="bg-slate-900 text-slate-100 antialiased overflow-hidden">
+  <body class="bg-[#030712] text-gray-100 antialiased overflow-hidden selection:bg-indigo-500/30">
     <div id="root"></div>
   </body>
 </html>
